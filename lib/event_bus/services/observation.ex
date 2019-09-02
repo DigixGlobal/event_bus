@@ -44,15 +44,23 @@ defmodule EventBus.Service.Observation do
   @doc false
   @spec mark_as_completed(subscriber_with_event_ref()) :: :ok
   def mark_as_completed({subscriber, event_shadow}) do
-    {subscribers, completers, skippers} = fetch(event_shadow)
-    save_or_delete(event_shadow, {subscribers, [subscriber | completers], skippers})
+    case fetch(event_shadow) do
+      {subscribers, completers, skippers}    ->
+        save_or_delete(event_shadow, {subscribers, [subscriber | completers], skippers})
+      nil ->
+        nil
+    end
   end
 
   @doc false
   @spec mark_as_skipped(subscriber_with_event_ref()) :: :ok
   def mark_as_skipped({subscriber, event_shadow}) do
-    {subscribers, completers, skippers} = fetch(event_shadow)
-    save_or_delete(event_shadow, {subscribers, completers, [subscriber | skippers]})
+    case fetch(event_shadow) do
+      {subscribers, completers, skippers}    ->
+        save_or_delete(event_shadow, {subscribers, completers, [subscriber | skippers]})
+      nil ->
+        nil
+    end
   end
 
   @doc false
